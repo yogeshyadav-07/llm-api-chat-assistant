@@ -6,7 +6,7 @@ A production-ready, professional AI Chat Application powered by **Mistral AI** a
 ---
 
 ### 🌐 Live Deployment
-🔗 **[Live Demo Link :  https://huggingface.co/spaces/yogesh626813/LLM-API-MODEL  ]**
+🔗  https://huggingface.co/spaces/yogesh626813/LLM-API-MODEL  
 
 ---
 
