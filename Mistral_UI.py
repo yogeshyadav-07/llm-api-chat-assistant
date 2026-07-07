@@ -15,11 +15,11 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- Custom Professional CSS ---
+# --- Custom Professional Light Theme CSS ---
 st.markdown("""
 <style>
     .stApp {
-        background-color: #0e1117;
+        background-color: #f7f9fc;
     }
     .chat-container {
         display: flex;
@@ -29,32 +29,33 @@ st.markdown("""
     }
     .user-msg {
         align-self: flex-end;
-        background-color: #2e6f40;
+        background-color: #007acc;
         color: white;
         padding: 12px 18px;
         border-radius: 18px 18px 0px 18px;
         max-width: 70%;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         font-size: 15px;
         line-height: 1.5;
     }
     .model-msg {
         align-self: flex-start;
-        background-color: #1e2329;
-        color: #e0e0e0;
+        background-color: #ffffff;
+        color: #2d3748;
         padding: 12px 18px;
         border-radius: 18px 18px 18px 0px;
         max-width: 80%;
-        border: 1px solid #333;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         font-size: 15px;
         line-height: 1.5;
     }
     .search-badge {
         font-size: 11px;
-        color: #888;
+        color: #4a5568;
         margin-bottom: 5px;
         display: block;
+        font-weight: 500;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -65,13 +66,13 @@ with st.sidebar:
     st.title("⚙️ AI App Controls")
     st.markdown("### Project: LLM Application Using APIs")
     st.markdown("*Developed with Large Language Model APIs, dynamic prompt engineering, and real-time search automation workflows.*")
-    
+
     st.divider()
-    
+
     st.markdown("### 🛠️ Capabilities")
     use_search = st.toggle("🌐 Enable Web Search (Tavily)", value=False, help="Fetches real-time data from the web before answering.")
     temperature = st.slider("🌡️ Creativity (Temperature)", min_value=0.0, max_value=1.0, value=0.3, step=0.1)
-    
+
     if st.button("🗑️ Clear Conversation"):
         st.session_state.messages = []
         st.rerun()
@@ -104,15 +105,15 @@ if user_input := st.chat_input("Type your message here..."):
     st.session_state.messages.append({"role": "user", "content": user_input})
     st.rerun()
 
-# --- Handle AI Response (FIXED LINE HERE) ---
+# --- Handle AI Response ---
 if st.session_state.messages and st.session_state.messages[-1]["role"] == "user":
     current_input = st.session_state.messages[-1]["content"]
-    
+
     with st.spinner("🤖 Processing your request..."):
         model = get_model(temperature)
         system_prompt = "You are a highly capable and professional AI assistant."
         search_context = ""
-        
+
         if use_search:
             try:
                 tavily_client = TavilyClient(api_key=os.environ.get("TAVILY_API_KEY"))
@@ -122,16 +123,16 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
                 system_prompt += f"\n\nUse the following real-time web search results to answer the user's query accurately:\n<Search_Results>\n{search_context}\n</Search_Results>"
             except Exception as e:
                 st.error(f"Search failed: {e}")
-        
+
         llm_messages = [SystemMessage(content=system_prompt)]
         for msg in st.session_state.messages[-6:]:
             if msg["role"] == "user":
                 llm_messages.append(HumanMessage(content=msg["content"]))
             elif msg["role"] == "assistant":
                 llm_messages.append(AIMessage(content=msg["content"]))
-                
+
         response = model.invoke(llm_messages)
-        
+
         st.session_state.messages.append({
             "role": "assistant", 
             "content": response.content,
